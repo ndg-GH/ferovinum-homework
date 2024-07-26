@@ -1,0 +1,26 @@
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: build/web.dockerfile
+    restart: unless-stopped
+    user: ferovinum
+    ports:
+      - "60000:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:16.3-alpine3.20
+    restart: unless-stopped
+    shm_size: 128mb
+    user: postgres
+    environment:
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+    ports:
+      - "60001:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
