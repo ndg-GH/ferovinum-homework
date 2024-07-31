@@ -4,7 +4,6 @@ services:
       context: ..
       dockerfile: build/web.dockerfile
     restart: unless-stopped
-    user: ferovinum
     ports:
       - "60000:8080"
     depends_on:
@@ -24,3 +23,28 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
+  db-init:
+    build:
+      context: ..
+      dockerfile: build/db-init.dockerfile
+    depends_on:
+      web:
+        condition: service_started
+      db:
+        condition: service_healthy
+  test:
+    build:
+      context: ..
+      dockerfile: build/test.dockerfile
+    depends_on:
+      - web
+    volumes:
+      - test-output:/ferovinum/test_output
+
+volumes:
+  test-output:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${FEROVINUM_ROOT_DIR}/test_output

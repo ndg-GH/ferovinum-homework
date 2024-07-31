@@ -18,13 +18,13 @@ RUN set -ex \
 
 RUN chown -R ferovinum:ferovinum /ferovinum
 
-COPY ./src/python/ferovinum /ferovinum/src/python/ferovinum
+COPY ./src/python/package/ferovinum /ferovinum/src/python/package/ferovinum
 
 RUN chown -R ferovinum:ferovinum /ferovinum/src
 
 USER ferovinum
 
 ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONPATH "/ferovinum/src/python"
+ENV PYTHONPATH "/ferovinum/src/python/package"
 
 CMD /ferovinum/venv/bin/hypercorn --config python:ferovinum.api.Config ferovinum.api:app
